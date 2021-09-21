@@ -24,6 +24,7 @@ class DataStorage (context: Context) {
     private lateinit var userRef : StorageReference
     private lateinit var fileRef : StorageReference
     private lateinit var context : Context
+    private lateinit var dataFile : File
 
 
     init {
@@ -36,25 +37,35 @@ class DataStorage (context: Context) {
 
 
         //get todays date for unique name with for each date
-        val sdf = SimpleDateFormat("dd-M-yyyy-mm-ss")
+        val sdf = SimpleDateFormat("dd-M-yyyy")
         val currentDate = sdf.format(Date())
 
         //create file with unique name for todays date
         val path = context.filesDir.absolutePath + "/data"
         //val path = context.filesDir.absolutePath + "/dataadfsdf"
         Log.d("file path", path)
-        var f = File(path)
-        f.createNewFile()
-        f.writeText("")
+        dataFile = File(path)
+        dataFile.createNewFile()
+        dataFile.writeText("")
 
         //setup firebase storage connection
         storage = Firebase.storage
         storageRef = storage.reference
         fileRef = storageRef.child(uniqueID.toString() + "/" + currentDate+".txt")
 
-        var uploadTask = fileRef.putFile(f.toUri())
+        logData("acclX, acclY, acclZ, prox, light\n")
 
+        //upload file to storage
+        var uploadTask = fileRef.putFile(dataFile.toUri())
 
+    }
+
+    public fun logData(data : String) {
+        dataFile.appendText(data)
+    }
+
+    public fun uploadData() {
+        var uploadTask = fileRef.putFile(dataFile.toUri())
     }
 
 }

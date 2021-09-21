@@ -19,6 +19,12 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
     private lateinit var ma : MainActivity
     private lateinit var storage : DataStorage //used to upload data to cloud
 
+    //storing sensor readings locally for easy logging
+    private lateinit var acclReadings : FloatArray
+    private var proxReading : Float = 0.0F
+    private var lightReading: Float = 0.0F
+
+
 
     //setting up our sensors
     init {
@@ -35,6 +41,13 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
         Log.d("storage", "got here")
         storage = DataStorage(ma.applicationContext);
 
+        //initialize accl readings array
+        acclReadings = FloatArray(3)
+        acclReadings[0] = 0.0F
+        acclReadings[1] = 0.0F
+        acclReadings[2] = 0.0F
+
+
         //TODO: figure out getting data from microphone
     }
 
@@ -49,21 +62,30 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
     //called when recording button is pressed and app is currently recording data
     fun pauseRecording() {
         mSensorManager.unregisterListener(this)
+        storage.uploadData()
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         //detect which sensor is updated and change on screen
-        //todo: log and upload to database
+        //log to file to be uploaded to database
 
         if (event != null) {
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                ma.acclX.text = event.values[0].toString() + " m/s²"
-                ma.acclY.text = event.values[1].toString() + " m/s²"
-                ma.acclZ.text = event.values[2].toString() + " m/s²"
+                ma.acclX.text = event.values[0].toString()
+                ma.acclY.text = event.values[1].toString()
+                ma.acclZ.text = event.values[2].toString()
+                acclReadings[0] = event.values[0]
+                acclReadings[1] = event.values[1]
+                acclReadings[2] = event.values[2]
+                logAllData()
             } else if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
-                ma.prox.text = event.values[0].toString() + " cm"
+                ma.prox.text = event.values[0].toString()
+                proxReading = event.values[0]
+                logAllData()
             } else if (event.sensor.type == Sensor.TYPE_LIGHT) {
-                ma.lightLevel.text = event.values[0].toString() + " °C"
+                ma.lightLevel.text = event.values[0].toString()
+                lightReading = event.values[0]
+                logAllData()
             }
         }
 
@@ -71,6 +93,11 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         //todo
+    }
+
+    private fun logAllData() {
+        storage.logData(acclReadings[0].toString() + "," + acclReadings[1].toString() + ","
+                + acclReadings[2].toString() + "," + proxReading + "," + lightReading+"\n")
     }
 
 }
