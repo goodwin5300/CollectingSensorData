@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "437754842715",
+    "project_id": "collectingsensordata",
+    "storage_bucket": "collectingsensordata.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437754842715:android:3692c050afef822af2797e",
+        "android_client_info": {
+          "package_name": "com.example.collectingsensordata"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437754842715-osnbj6fh59v3fcrh1er7rjjm28h3985i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwIZTunlV9Lld8lX7WGIPWdz4AbnLL5Ec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "437754842715-osnbj6fh59v3fcrh1er7rjjm28h3985i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

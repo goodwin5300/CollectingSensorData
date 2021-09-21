@@ -4,6 +4,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
@@ -16,6 +17,7 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
     private lateinit var proximitySensor : Sensor //used to detect if light sensor is blocked
     private lateinit var lightSensor : Sensor //used to detect light levels
     private lateinit var ma : MainActivity
+    private lateinit var storage : DataStorage //used to upload data to cloud
 
 
     //setting up our sensors
@@ -29,6 +31,9 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
         lightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
 
         ma = MainActivity
+
+        Log.d("storage", "got here")
+        storage = DataStorage(ma.applicationContext);
 
         //TODO: figure out getting data from microphone
     }
