@@ -4,9 +4,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.provider.ContactsContract
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import java.text.SimpleDateFormat
+import java.util.*
 
 //this class reads data from the sensors
 
@@ -47,6 +48,9 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
         acclReadings[1] = 0.0F
         acclReadings[2] = 0.0F
 
+        //initialize sleep request manager
+        //sleepRequestManager = SleepRequestsManager(ma);
+
 
         //TODO: figure out getting data from microphone
     }
@@ -56,13 +60,19 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
         mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
+
+        ma.requestPerm();
+        ma.subscribeToSleepEvents();
+
         Log.d("Sensors", "Started Recording")
     }
 
     //called when recording button is pressed and app is currently recording data
-    fun pauseRecording() {
+    public fun pauseRecording() {
         mSensorManager.unregisterListener(this)
         storage.uploadData()
+        //unsubscribe from sleep API
+        ma.unSubscribeToSleepEvents()
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -96,7 +106,9 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
     }
 
     private fun logAllData() {
-        storage.logData(acclReadings[0].toString() + "," + acclReadings[1].toString() + ","
+        val sdf = SimpleDateFormat("hh:mm:ss")
+        val currentDate = sdf.format(Date())
+        storage.logData(currentDate + "," + acclReadings[0].toString() + "," + acclReadings[1].toString() + ","
                 + acclReadings[2].toString() + "," + proxReading + "," + lightReading+"\n")
     }
 

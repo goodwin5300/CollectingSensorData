@@ -53,7 +53,7 @@ class DataStorage (context: Context) {
         storageRef = storage.reference
         fileRef = storageRef.child(uniqueID.toString() + "/" + currentDate+".txt")
 
-        logData("acclX, acclY, acclZ, prox, light\n")
+        logData("time,acclX,acclY,acclZ,prox,light\n")
 
         //upload file to storage
         var uploadTask = fileRef.putFile(dataFile.toUri())
