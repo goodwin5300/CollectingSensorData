@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.pow
 
 //this class reads data from the sensors
 
@@ -24,6 +25,7 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
     private lateinit var acclReadings : FloatArray
     private var proxReading : Float = 0.0F
     private var lightReading: Float = 0.0F
+    private var acclVariance: Float = 0.0F
 
 
 
@@ -44,9 +46,12 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
 
         //initialize accl readings array
         acclReadings = FloatArray(3)
+        val oldAcclReadings = acclReadings
         acclReadings[0] = 0.0F
         acclReadings[1] = 0.0F
         acclReadings[2] = 0.0F
+
+        acclVariance = bodyMovCalc(acclReadings, oldAcclReadings)
 
         //initialize sleep request manager
         //sleepRequestManager = SleepRequestsManager(ma);
@@ -110,6 +115,21 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
         val currentDate = sdf.format(Date())
         storage.logData(currentDate + "," + acclReadings[0].toString() + "," + acclReadings[1].toString() + ","
                 + acclReadings[2].toString() + "," + proxReading + "," + lightReading+"\n")
+    }
+
+    //function to detect body movements
+    fun bodyMovCalc(acclReadings: FloatArray, oldAcclReadings: FloatArray): Float {
+        //calculate overall acceleration
+        //sqrt(ax^2 + ay^2 + az^2)
+        val accl = Math.sqrt((acclReadings[0].toDouble().pow(2))+(acclReadings[0].toDouble().pow(2))+(acclReadings[0].toDouble().pow(2)))
+        val oldAccl = Math.sqrt((oldAcclReadings[0].toDouble().pow(2))+(oldAcclReadings[0].toDouble().pow(2))+(oldAcclReadings[0].toDouble().pow(2)))
+
+        //calculate accleration variance
+        //variance = a(i) - a(i-1)
+        val variance = accl - oldAccl
+
+        return variance.toFloat()
+
     }
 
 }
