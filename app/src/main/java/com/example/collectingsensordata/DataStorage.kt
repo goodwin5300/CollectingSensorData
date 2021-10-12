@@ -1,9 +1,9 @@
 package com.example.collectingsensordata
 
 import android.content.Context
-import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.util.Log.ASSERT
 import androidx.core.net.toUri
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.ktx.Firebase
@@ -11,11 +11,9 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStreamWriter
-import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class DataStorage (context: Context) {
 
@@ -25,6 +23,7 @@ class DataStorage (context: Context) {
     private lateinit var fileRef : StorageReference
     private lateinit var context : Context
     private lateinit var dataFile : File
+    private lateinit var handler: Handler
 
 
     init {
@@ -58,6 +57,8 @@ class DataStorage (context: Context) {
         //upload file to storage
         var uploadTask = fileRef.putFile(dataFile.toUri())
 
+        handler = Handler(Looper.getMainLooper())
+
     }
 
     public fun logData(data : String) {
@@ -65,7 +66,33 @@ class DataStorage (context: Context) {
     }
 
     public fun uploadData() {
-        var uploadTask = fileRef.putFile(dataFile.toUri())
+        if(dataFile.length() != 0.toLong()) {
+            var uploadTask = fileRef.putFile(dataFile.toUri())
+        }
+    }
+
+    //uploads file once an hour in case of crash
+    var uploader: Runnable = object : Runnable {
+        override fun run() {
+            try {
+                periodicUpload()
+            } finally {
+                handler.postDelayed(this, 1000 * 60 * 60)
+            }
+        }
+    }
+
+    public fun startUploading() {
+        uploader.run()
+    }
+
+    public fun pauseUploading() {
+        handler.removeCallbacks(uploader)
+    }
+
+    private fun periodicUpload() {
+        uploadData();
+        Log.d("DataStorage", "Uploading data periodically");
     }
 
 }

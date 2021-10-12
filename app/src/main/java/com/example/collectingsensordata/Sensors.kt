@@ -63,6 +63,7 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
 
         ma.requestPerm();
         ma.subscribeToSleepEvents();
+        storage.startUploading();
 
         Log.d("Sensors", "Started Recording")
     }
@@ -87,15 +88,14 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
                 acclReadings[0] = event.values[0]
                 acclReadings[1] = event.values[1]
                 acclReadings[2] = event.values[2]
-                logAllData()
+                if (acclReadings[0] != 0f || acclReadings[1] != 0f || acclReadings[2] != 0f)
+                    logAllData()
             } else if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
                 ma.prox.text = event.values[0].toString()
                 proxReading = event.values[0]
-                logAllData()
             } else if (event.sensor.type == Sensor.TYPE_LIGHT) {
                 ma.lightLevel.text = event.values[0].toString()
                 lightReading = event.values[0]
-                logAllData()
             }
         }
 
