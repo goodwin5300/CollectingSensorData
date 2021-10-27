@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.location.SleepClassifyEvent
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.pow
@@ -26,7 +27,10 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
     private var proxReading : Float = 0.0F
     private var lightReading: Float = 0.0F
     private var acclVariance: Float = 0.0F
-
+    //sleep API values
+    private var saConfidence : Int = 0
+    private var saLight : Int = 0
+    private var saMotion : Int = 0
 
 
     //setting up our sensors
@@ -75,6 +79,7 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
 
     //called when recording button is pressed and app is currently recording data
     public fun pauseRecording() {
+        Log.d("Sensors", "Pausing recording");
         mSensorManager.unregisterListener(this)
         storage.uploadData()
         //unsubscribe from sleep API
@@ -90,17 +95,22 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
                 ma.acclX.text = event.values[0].toString()
                 ma.acclY.text = event.values[1].toString()
                 ma.acclZ.text = event.values[2].toString()
+                val oldAcclReadings = acclReadings
                 acclReadings[0] = event.values[0]
                 acclReadings[1] = event.values[1]
                 acclReadings[2] = event.values[2]
+                //calculate the acceleration variance
+                acclVariance = bodyMovCalc(acclReadings, oldAcclReadings)
                 if (acclReadings[0] != 0f || acclReadings[1] != 0f || acclReadings[2] != 0f)
                     logAllData()
             } else if (event.sensor.type == Sensor.TYPE_PROXIMITY) {
                 ma.prox.text = event.values[0].toString()
                 proxReading = event.values[0]
+                logAllData()
             } else if (event.sensor.type == Sensor.TYPE_LIGHT) {
                 ma.lightLevel.text = event.values[0].toString()
                 lightReading = event.values[0]
+                logAllData()
             }
         }
 
@@ -110,11 +120,22 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
         //todo
     }
 
+    fun onSleepClassifyEvent(event: SleepClassifyEvent) {
+        Log.d("Sensors", "Got sleep API data")
+        if(event != null) {
+            saConfidence = event.confidence
+            saLight = event.light
+            saMotion = event.motion
+            logAllData();
+        }
+    }
+
     private fun logAllData() {
         val sdf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date())
         storage.logData(currentDate + "," + acclReadings[0].toString() + "," + acclReadings[1].toString() + ","
-                + acclReadings[2].toString() + "," + proxReading + "," + lightReading+"\n")
+                + acclReadings[2].toString() + "," +acclVariance+","+ proxReading + "," + lightReading+","+saConfidence+","+
+                saLight+","+saMotion+"\n")
     }
 
     //function to detect body movements

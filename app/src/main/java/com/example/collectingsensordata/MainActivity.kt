@@ -33,10 +33,10 @@ class MainActivity : AppCompatActivity() {
 
     public lateinit var mSensorManager : SensorManager
 
-    private lateinit var sensors : Sensors;
+    public lateinit var sensors : Sensors;
 
     private val sleepRequestManager by lazy{
-        SleepRequestsManager(this)
+        SleepRequestsManager(this, this)
     }
 
     private val permissionRequester: ActivityResultLauncher<String> =

@@ -5,15 +5,14 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.example.collectingsensordata.SleepReceiver
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.SleepSegmentRequest
 
 //this class manages subscribing and unsubscribing to updates from sleep API
-class SleepRequestsManager(private val context: Context) {
+class SleepRequestsManager(private val context: Context, mainActivity: MainActivity) {
 
     private val sleepReceiverPendingIntent by lazy {
-        SleepReceiver.createPendingIntent(context)
+        SleepReceiver.createPendingIntent(context, mainActivity)
     }
 
     //check whether data can be accessed and subscribe to updates if still can

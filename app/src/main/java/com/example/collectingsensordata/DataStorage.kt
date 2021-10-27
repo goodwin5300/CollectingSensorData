@@ -41,7 +41,6 @@ class DataStorage (context: Context) {
 
         //create file with unique name for todays date
         val path = context.filesDir.absolutePath + "/data"
-        //val path = context.filesDir.absolutePath + "/dataadfsdf"
         Log.d("file path", path)
         dataFile = File(path)
         dataFile.createNewFile()
@@ -50,9 +49,9 @@ class DataStorage (context: Context) {
         //setup firebase storage connection
         storage = Firebase.storage
         storageRef = storage.reference
-        fileRef = storageRef.child(uniqueID.toString() + "/" + currentDate+".txt")
+        fileRef = storageRef.child("dev/"+uniqueID.toString() + "/" + currentDate+".txt")
 
-        logData("time,acclX,acclY,acclZ,prox,light\n")
+        logData("time,acclX,acclY,acclZ,variance,prox,light,confidence,light,motion\n")
 
         //upload file to storage
         var uploadTask = fileRef.putFile(dataFile.toUri())
@@ -66,6 +65,7 @@ class DataStorage (context: Context) {
     }
 
     public fun uploadData() {
+        Log.d("DataStorage", "Uploading Data")
         if(dataFile.length() != 0.toLong()) {
             var uploadTask = fileRef.putFile(dataFile.toUri())
         }
