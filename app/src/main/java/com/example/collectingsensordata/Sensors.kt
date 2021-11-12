@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.SleepClassifyEvent
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Arrays.copyOf
 import kotlin.math.pow
 
 //this class reads data from the sensors
@@ -45,7 +46,6 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
 
         ma = MainActivity
 
-        Log.d("storage", "got here")
         storage = DataStorage(ma.applicationContext);
 
         //initialize accl readings array
@@ -95,7 +95,7 @@ class Sensors( MainActivity: MainActivity) : AppCompatActivity(), SensorEventLis
                 ma.acclX.text = event.values[0].toString()
                 ma.acclY.text = event.values[1].toString()
                 ma.acclZ.text = event.values[2].toString()
-                val oldAcclReadings = acclReadings
+                val oldAcclReadings = acclReadings.copyOf(acclReadings.size)
                 acclReadings[0] = event.values[0]
                 acclReadings[1] = event.values[1]
                 acclReadings[2] = event.values[2]

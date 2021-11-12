@@ -7,9 +7,12 @@ import android.content.Intent
 import android.util.Log
 import com.google.android.gms.location.SleepClassifyEvent
 import com.google.android.gms.location.SleepSegmentEvent
+import java.io.File
 
 class SleepReceiver : BroadcastReceiver() {
     //content provider
+
+
 
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.d(TAG, "received something")
@@ -31,7 +34,7 @@ class SleepReceiver : BroadcastReceiver() {
 
             for (event in events) {
                 Log.d(TAG, "Confidence: ${event.confidence} - Light: ${event.light} - Motion: ${event.motion}")
-                sensors.onSleepClassifyEvent(event)
+                sensors.onSleepClassifyEvent(event);
             }
         }
 
@@ -47,11 +50,13 @@ class SleepReceiver : BroadcastReceiver() {
             Log.d("SleepAPI", "creating pending intent");
             val intent = Intent(context, SleepReceiver::class.java)
 
+            sensors = mainActivity.sensors;
+
             return PendingIntent.getBroadcast(
                 context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT
             )
-            sensors = mainActivity.sensors
         }
+
 
     }
 }

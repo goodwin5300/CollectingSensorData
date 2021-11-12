@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.SensorManager
+import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -18,6 +19,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.SleepSegmentRequest
+import android.media.AudioManager
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,9 +36,14 @@ class MainActivity : AppCompatActivity() {
     public lateinit var lightLevel: TextView
     public lateinit var prox: TextView
 
+    //media player for controlling music
+    private lateinit var audioManager: AudioManager
+
     public lateinit var mSensorManager : SensorManager
 
-    public lateinit var sensors : Sensors;
+    public val sensors by lazy {
+        Sensors(MainActivity = this)
+    }
 
     private val sleepRequestManager by lazy{
         SleepRequestsManager(this, this)
@@ -57,6 +67,7 @@ class MainActivity : AppCompatActivity() {
 
         //objects from xml
         val collectButton = findViewById(R.id.collectButton) as Button
+        val PauseButton = findViewById(R.id.PauseButton) as Button
 
         //initiate textViews
         acclX = findViewById(R.id.acclX) as TextView
@@ -68,7 +79,6 @@ class MainActivity : AppCompatActivity() {
 
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-        sensors = Sensors(this)
 
         //when collect button is pressed, start collecting data
         collectButton.setOnClickListener() {
@@ -84,7 +94,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        audioManager = this.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+        //when pause button pressed, pause media
+        PauseButton.setOnClickListener() {
+            audioManager.requestAudioFocus(
+                { focusChange -> },
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN
+            )
+        }
+
     }
+
+
 
     public fun updateAccl (x: Float) {
         acclX.text = x.toString()

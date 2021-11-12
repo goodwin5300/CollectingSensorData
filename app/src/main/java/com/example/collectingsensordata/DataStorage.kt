@@ -41,7 +41,6 @@ class DataStorage (context: Context) {
 
         //create file with unique name for todays date
         val path = context.filesDir.absolutePath + "/data"
-        Log.d("file path", path)
         dataFile = File(path)
         dataFile.createNewFile()
         dataFile.writeText("")
@@ -49,7 +48,7 @@ class DataStorage (context: Context) {
         //setup firebase storage connection
         storage = Firebase.storage
         storageRef = storage.reference
-        fileRef = storageRef.child("dev/"+uniqueID.toString() + "/" + currentDate+".txt")
+        fileRef = storageRef.child("dev/"+uniqueID.toString() + "/" + currentDate+".csv")
 
         logData("time,acclX,acclY,acclZ,variance,prox,light,confidence,light,motion\n")
 
